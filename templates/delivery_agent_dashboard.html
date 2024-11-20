@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Agent Dashboard</title>
+    <style>
+        /* General Page Styling */
+        body {
+            background-color: white;
+            font-family: Helvetica, Arial, sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensure the body takes up at least the full viewport height */
+        }
+
+        /* Navbar Styling (Sticky) */
+        .navbar {
+            background-color: #bce53e; /* Greenish-yellow */
+            color: white;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            left: 0;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .navbar .company-name {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        /* Form and Button Styling */
+        form {
+            margin: 0; /* Remove margin to avoid clipping */
+        }
+
+        .logout-button {
+            background-color: #ff4c4c;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .logout-button:hover {
+            background-color: #cc3c3c;
+        }
+
+        /* Assigned Orders Tag */
+        .assigned-orders-tag {
+            color: #333;
+            padding: 10px 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f3f3f3;
+            color: #333;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Action Button Styling */
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Map Link Styling */
+        a {
+            color: #0056b3;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer Styling */
+        footer {
+            margin-top: auto; /* Pushes footer to the bottom */
+            background-color: #f1f1f1;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 1em;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar with Company Name and Logout Button -->
+    <div class="navbar">
+        <div class="company-name">AQUA DROPA</div>
+        <form action="{{ url_for('logout_agent') }}" method="post">
+            <button type="submit" class="logout-button">Logout</button>
+        </form>
+    </div>
+    
+    <!-- Assigned Orders Section -->
+    <div class="assigned-orders-tag">
+        Assigned Orders
+    </div>
+
+    <!-- Table to display orders -->
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>User Name</th>
+            <th>Product Type</th>
+            <th>Quantity</th>
+            <th>Timestamp</th>
+            <th>Location</th>
+            <th>Actions</th>
+        </tr>
+        {% for order in orders %}
+        <tr style="background-color: #f1f1b8;"> <!-- Yellow background for assigned orders -->
+            <td>{{ order.id }}</td>
+            <td>{{ order.user.name }}</td>
+            <td>{{ order.product_type }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>{{ order.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>
+                {% if order.user.location %}
+                <a href="https://www.google.com/maps/dir/?api=1&destination={{ order.user.location }}" target="_blank">
+                    View on Map
+                </a>
+                {% else %}
+                    Location not available
+                {% endif %}
+            </td>
+            <td>
+                <form action="{{ url_for('delivery_agent_mark_delivered', id=order.id) }}" method="POST" style="display:inline;">
+                    <button type="submit">Mark as Delivered</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Footer Content -->
+    <footer>
+        &copy; 2024 AQUA DROPA. All Rights Reserved.
+    </footer>
+
+</body>
+</html>
