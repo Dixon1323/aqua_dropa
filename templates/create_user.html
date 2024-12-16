@@ -1,0 +1,159 @@
+{% include 'layouts/adminHeader.html' %}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDYdTBac2rRJBem9ntcha-RKROmIlj8nVQ&libraries=places"></script>
+<script>
+  function initAutocomplete() {
+    var input = document.getElementById('autocomplete');
+    var autocomplete = new google.maps.places.Autocomplete(input);
+    autocomplete.setFields(['address_components', 'geometry', 'icon', 'name']);
+    autocomplete.addListener('place_changed', function () {
+      var place = autocomplete.getPlace();
+      if (!place.geometry) {
+        window.alert("No details available for input: '" + place.name + "'");
+        return;
+      }
+      document.getElementById('location').value =
+        place.geometry.location.lat() + ', ' + place.geometry.location.lng();
+    });
+  }
+
+  function getCurrentLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function (position) {
+          var lat = position.coords.latitude;
+          var lng = position.coords.longitude;
+          var latlng = new google.maps.LatLng(lat, lng);
+          var geocoder = new google.maps.Geocoder();
+          geocoder.geocode({ location: latlng }, function (results, status) {
+            if (status === 'OK') {
+              if (results[0]) {
+                document.getElementById('autocomplete').value =
+                  results[0].formatted_address;
+                document.getElementById('location').value = lat + ', ' + lng;
+              } else {
+                window.alert('No results found');
+              }
+            } else {
+              window.alert('Geocoder failed due to: ' + status);
+            }
+          });
+        },
+        function () {
+          alert('Geolocation failed');
+        }
+      );
+    } else {
+      alert('Geolocation is not supported by this browser.');
+    }
+  }
+</script>
+
+</head>
+
+<style>
+  body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        position: relative;
+    }
+
+       .main-wrap {
+        min-height: 100vh;
+        padding-bottom: 100px; /* This should be more than your footer height */
+    }
+  .btn-1:hover{
+    background-color: #bce53e !important;
+  }
+  .btn-2:hover{
+    background-color: rgb(179, 167, 167) !important;
+  }
+  .btn-primary:hover{
+    background-color: rgb(6, 6, 174) !important;
+  }
+</style>
+<body onload="initAutocomplete()">
+
+{% include 'layouts/adminNav.html' %}
+
+<main class="main-wrap pt-10">
+  <div class="container" style="max-width: 500px; margin-top: 10px;">
+    <div class="row justify-content-center">
+      <div class="col-12 grid-margin">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title pb-5">Create User</h4>
+            <form action="{{ url_for('create_user') }}" method="POST">
+              
+              <!-- Name Field -->
+              <div class="form-group row mb-3">
+                <label class="form-label col-md-4">Name:</label>
+                <div class="col-md-8">
+                  <input type="text" name="name" class="form-control" required />
+                </div>
+              </div>
+
+              <!-- Email Field -->
+              <div class="form-group row mb-3">
+                <label class="form-label col-md-4">Email:</label>
+                <div class="col-md-8">
+                  <input type="email" name="email" class="form-control" required />
+                </div>
+              </div>
+
+              <!-- Phone Field -->
+              <div class="form-group row mb-3">
+                <label class="form-label col-md-4">Phone:</label>
+                <div class="col-md-8">
+                  <input type="text" name="phone" class="form-control" required />
+                </div>
+              </div>
+
+              <!-- Address Field -->
+              <div class="form-group row mb-3">
+                <label class="form-label col-md-4">Address:</label>
+                <div class="col-md-8">
+                  <input type="text" name="address" class="form-control" required />
+                </div>
+              </div>
+
+              <!-- Location Field (with Autocomplete) -->
+              <div class="form-group row mb-3">
+                <label class="form-label col-md-4">Location:</label>
+                <div class="col-md-8">
+                  <input type="text" id="autocomplete" placeholder="Enter location manually" class="form-control" required />
+                  <input type="hidden" id="location" name="location" />
+                </div>
+              </div>
+
+             <!-- Current Location Button -->
+              <div class="form-group row mb-3">
+                <div class="col-md-8 offset-md-4">
+                  <button type="button" class="btn btn-sm btn-primary" style="background-color: #007bff; color: white;" onclick="getCurrentLocation()">
+                    <i class="fas fa-map-marker-alt"></i> Use Current Location
+                  </button>
+                </div>
+              </div>
+
+              <!-- Submit and Cancel Buttons -->
+              <div class="form-group row mb-3 text-center">
+                <div class="col-md-12 d-flex justify-content-center">
+                  <button type="submit" class="btn btn-sm btn-1" style="background-color: #CCFF00; color: black; margin-right: 10px;">
+                    Submit
+                  </button>
+                  <a href="#" class="btn btn-sm btn-2" style="border: 1px solid #CCFF00; background-color: white; color: black;">
+                    Cancel
+                  </a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+{% include 'layouts/adminFooter.html' %}
+</body>
+</html>

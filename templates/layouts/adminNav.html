@@ -1,0 +1,216 @@
+<script>
+    document.querySelector('.btn-aside-minimize').addEventListener('click', function () {
+    document.getElementById('offcanvas_aside').classList.toggle('minimized');
+});
+    
+
+</script>
+
+<script>
+    // Function to fetch pending orders count
+    function fetchPendingOrdersCount() {
+        fetch('/admin/get_pending_orders_count')
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.getElementById('pending-orders-count');
+                if (data.count > 0) {
+                    badge.textContent = data.count; // Display count
+                    badge.style.display = 'inline-block'; // Show badge
+                } else {
+                    badge.style.display = 'none'; // Hide badge if count is 0
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching pending orders count:', error);
+            });
+    }
+
+    // Call the function on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchPendingOrdersCount(); // Initial fetch when the page loads
+        
+        // Update every 30 seconds (30000ms)
+        setInterval(fetchPendingOrdersCount, 500); // Adjust interval as needed
+    });
+</script>
+
+
+
+<style>
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; /* Use a clean font */
+    
+}
+.navbar-aside.minimized .company-title {
+    display: none; /* Hide the company-title when the sidebar is minimized */
+}
+
+.navbar {
+    background-color: #95b33c; /* Yellow-green background */
+    padding: 10px 20px; /* Add some padding */
+    display: flex;
+    justify-content: space-between; /* Space out elements */
+    align-items: center; /* Center items vertically */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+     position: sticky; /* Make the navbar sticky */
+    top: 0; /* Stick it to the top */
+    z-index: 1 /* Ensure it stays above other elements */
+}
+
+.navbar .nav-link {
+    color: white; /* White text for links */
+    margin-left: 15px; /* Space between links */
+    transition: color 0.3s; /* Smooth color change */
+}
+
+.navbar .nav-link:hover {
+    color: #bce53e; /* Lighter yellow on hover */
+}
+
+.navbar-aside {
+    background-color: white; /* White background for sidebar */
+    width: 250px; /* Fixed width for sidebar */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2); /* Add shadow */
+    transition: transform 0.3s; /* Smooth transition for sidebar */
+    z-index: 10;
+}
+
+.navbar-aside .menu-link {
+    color: #333; /* Dark text for menu items */
+    padding: 10px 15px; /* Padding for menu items */
+    display: flex;
+    align-items: center; /* Center icons and text */
+    transition: background 0.3s, color 0.3s; /* Smooth transitions */
+}
+
+.navbar-aside .menu-link:hover {
+    background-color: #95b33c; /* Highlight on hover */
+    color: black; /* Change text color on hover */
+}
+
+.submenu {
+    background-color: #f9f9f9; /* Light gray for submenu */
+}
+
+.submenu a {
+    border-radius: 5px;
+    color: #333; /* Dark text for submenu items */
+    padding: 10px 15px; /* Padding for submenu items */
+    display: block; /* Make submenu items block level */
+    
+}
+
+.submenu a:hover {
+    background-color: #95b33c; /* Highlight submenu items on hover */
+    color: white; /* Change text color on hover */
+}
+
+.btn {
+    background-color: #95b33c; /* Button color */
+    color: white; /* Button text color */
+    border: none; /* Remove default border */
+    padding: 10px; /* Add padding to buttons */
+    border-radius: 5px; /* Rounded corners */
+    transition: background 0.3s; /* Smooth background change */
+}
+
+.btn:hover {
+    background-color: #CCFF00; /* Lighter yellow on button hover */
+}
+.navbar-aside.minimized {
+    width: 60px;
+    position: fixed; /* Keep it fixed when minimized */
+    top: 0;
+    left: 0;
+}
+
+.badges {
+        background-color: #FF6347; /* Tomato color */
+        color: white;
+        padding: 2px 6px;
+        border-radius: 10px;
+        font-size: 12px;
+        margin-left: 10px; /* Adjust as needed */
+    }
+
+</style>
+
+<body>
+    <div class="screen-overlay"></div>
+    <!-- sidebar -->
+    <aside class="navbar-aside" id="offcanvas_aside">
+        <div class="aside-top">
+            <!-- <a href="home" class="brand-wrap">
+                <img src="{{ url_for('static', filename='admin/assets/imgs/theme/pngwing.com.png') }}" class="logo" alt="Aqua dropa">
+            </a> -->
+            <span class="brand-wrap"> AQUA DROPA</span>
+            <div>
+                <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
+            </div>
+        </div>
+        <nav>
+            <ul class="menu-aside">
+                <li class="menu-item has-submenu">
+                    <a class="menu-link" href="/"> <i class="icon material-icons md-home"></i>
+                        <span class="text">Dashboard</span>
+                    </a>
+                    <div class="submenu">
+                        <a href="/admin/dashboard" >Dashboard</a>
+                    </div>
+                </li>
+                <li class="menu-item has-submenu">
+                    <a class="menu-link" href="#"> <i class="icon material-icons md-shopping_bag"></i>
+                        <span class="text">Delivery Agent</span>
+                    </a>
+                    <div class="submenu">
+                        <a href="/admin/create_delivery_agent">Create Delivery Agent</a>
+                        <a href="/admin/view_delivery_agents">View Delivery Agents</a>
+                    </div>
+                </li>
+                <li class="menu-item has-submenu">
+                    <a class="menu-link" href="#"> <i class="icon material-icons md-person"></i>
+                        <span class="text">Users</span>
+                    </a>
+                    <div class="submenu">
+                        <a href="/admin/create_user_form">Create User</a>
+                         <a href="/admin/view_users">View Users</a>
+                        <a href="/admin/edit_user_form">Edit User</a>
+                        
+                    </div>
+                </li>
+                <li class="menu-item has-submenu">
+                    <a class="menu-link" href="#"> 
+                        <i class="icon material-icons md-shopping_cart"></i>
+                        <span class="text">Orders</span>
+                        <span id="pending-orders-count" class="badges"></span>
+                    </a>
+                    <div class="submenu">
+                        <a href="/admin/view_orders">View Orders</a>
+                    </div>
+                </li>
+                
+                
+                
+            </ul>
+            <hr>
+        </nav>
+    </aside>
+
+    <header class="main-header navbar">
+        <div class="col-search"></div>
+        <div class="col-nav">
+            <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> <i class="material-icons md-apps"></i> </button>
+            <ul class="nav">
+                <!-- <li class="nav-item">
+                        <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
+                    </li> -->
+                <li class="dropdown nav-item">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false">Admin</a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                      
+                        <a class="dropdown-item text-danger" href="/logout"><i class="material-icons md-exit_to_app"></i>Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </header>

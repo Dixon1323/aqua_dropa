@@ -1,0 +1,204 @@
+{% include 'layouts/adminHeader.html' %}
+</head>
+<style>
+    body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        position: relative;
+    }
+
+    .main-wrap {
+        min-height: 100vh;
+        padding-bottom: 100px;
+    }
+
+    .btn-primary {
+        width: 60px;
+        height: 30px;
+        padding: 4px 10px !important;
+        text-align: start !important;
+    }
+
+    table th, table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .badge {
+        display: inline-block;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .pagination a {
+        margin: 0 5px;
+        padding: 5px 10px;
+        text-decoration: none;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+    }
+
+    .pagination a:hover {
+        background-color: #f1f1f1;
+    }
+
+    .pagination span {
+        margin: 0 5px;
+        padding: 5px 10px;
+    }
+
+    .card-body {
+        margin-bottom: 20px;
+    }
+
+    .table-responsive {
+        margin-bottom: 40px;
+    }
+
+    .sort-arrows {
+        cursor: pointer;
+        font-size: 12px;
+        margin-left: 5px;
+        color: #007bff;
+    }
+</style>
+
+<body>
+{% include 'layouts/adminNav.html' %}
+
+<main class="main-wrap">
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Order List</h2>
+            </div>
+        </div>
+            <form method="get" action="{{ url_for('view_orders') }}">
+                <label for="per_page">Items per page:</label>
+                <select name="per_page" id="per_page" onchange="this.form.submit()">
+                    <option value="5" {% if per_page == 5 %}selected{% endif %}>5</option>
+                    <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                    <option value="20" {% if per_page == 20 %}selected{% endif %}>20</option>
+                    <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                </select>
+            </form>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="ordersTable" data-sort-order="asc">
+                    <thead>
+                        <tr>
+
+                            <th>
+                                Timestamp
+                                <span class="sort-arrows" onclick="sortTable(0)">⬆⬇</span>
+                            </th>
+                            <th>
+                                User Name
+                                <span class="sort-arrows" onclick="sortTable(1)">⬆⬇</span>
+                            </th>
+                            <th>Quantity</th>
+                            <th>
+                                Product Type
+                                <span class="sort-arrows" onclick="sortTable(3)">⬆⬇</span>
+                            </th>
+                            <th>
+                                Status
+                                <span class="sort-arrows" onclick="sortTable(4)">⬆⬇</span>
+                            </th>
+                            <th>Assigned Delivery Boy</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders.items %}
+                        <tr>
+                            <td>{{ order.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ order.user.name }}</td>
+                            <td>{{ order.quantity }}</td>
+                            <td>{{ order.product_type }}</td>
+                            <td>
+                                {% if order.status == 'Placed' %}
+                                    <div class="badge rounded-pill alert-primary">{{ order.status }}</div>
+                                {% elif order.status == 'Dispatched' %}
+                                    <div class="badge rounded-pill alert-info">{{ order.status }}</div>
+                                {% elif order.status == 'Delivered' %}
+                                    <div class="badge rounded-pill alert-success">{{ order.status }}</div>
+                                {% elif order.status == 'Cancel Requested' %}
+                                    <div class="badge rounded-pill alert-warning">{{ order.status }}</div>
+                                {% elif order.status == 'Return Requested' %}
+                                    <div class="badge rounded-pill alert-warning">{{ order.status }}</div>
+                                {% else %}
+                                    <div class="badge rounded-pill alert-danger">{{ order.status }}</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if order.delivery_agent %}
+                                    {{ order.delivery_agent.name }}
+                                {% else %}
+                                    <form action="{{ url_for('assign_delivery_agent', order_id=order.id) }}" method="POST" style="display: block;">
+                                        <select name="delivery_agent_id">
+                                            <option value="">Select Delivery Agent</option>
+                                            {% for agent in delivery_agents %}
+                                                <option value="{{ agent.id }}">{{ agent.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-primary">Assign</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                {% if order.status != 'Delivered' %}
+                                    <form action="{{ url_for('mark_delivered', id=order.id) }}" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-success">Mark as Delivered</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                {% if orders.has_prev %}
+                    <a href="{{ url_for('view_orders', page=orders.prev_num, per_page=per_page) }}" class="btn btn-sm btn-outline-secondary">Previous</a>
+                {% endif %}
+                <span>Page {{ orders.page }} of {{ orders.pages }}</span>
+                {% if orders.has_next %}
+                    <a href="{{ url_for('view_orders', page=orders.next_num, per_page=per_page) }}" class="btn btn-sm btn-outline-secondary">Next</a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</main>
+{% include 'layouts/adminFooter.html' %}
+
+<script>
+    function sortTable(columnIndex) {
+        const table = document.getElementById("ordersTable");
+        const rows = Array.from(table.rows).slice(1); // Exclude the header row
+        const isAscending = table.getAttribute("data-sort-order") !== "asc"; // Toggle sort order
+
+        rows.sort((rowA, rowB) => {
+            const cellA = rowA.cells[columnIndex].innerText.toLowerCase();
+            const cellB = rowB.cells[columnIndex].innerText.toLowerCase();
+
+            if (!isNaN(cellA) && !isNaN(cellB)) {
+                // Numeric comparison
+                return isAscending ? cellA - cellB : cellB - cellA;
+            }
+            // String comparison
+            return isAscending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+        });
+
+        rows.forEach(row => table.tBodies[0].appendChild(row)); // Append sorted rows
+        table.setAttribute("data-sort-order", isAscending ? "asc" : "desc"); // Update sort order
+    }
+</script>
+</body>
+</html>

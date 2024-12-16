@@ -1,0 +1,95 @@
+{% include 'layouts/adminHeader.html' %}
+<style>
+        /* Styling the navbar with lemon green and white */
+        .navbar {
+            background-color: #95b33c !important; /* Lemon green */
+            color: white !important;
+        }
+
+        /* Adjusting the logo */
+        .navbar .logo {
+            height: 50px;
+        }
+
+        /* Card style for the login form */
+        .card-login {
+            background-color: white !important;
+            border: 1px solid #bce53e !important;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Title styling */
+        .card-title {
+            color: #4F930E !important; /* Lemon green */
+            font-weight: bold;
+        }
+
+        /* Button styling */
+        .btn-primary:hover {
+            background-color: #bce53e !important; /* Lemon green */
+            color: white !important;
+            border-color: #bce53e !important;
+        }
+
+        .btn-primary {
+            background-color: white !important;
+            color: #4F930E !important;
+            border:2px solid #bce53e !important;
+        }
+
+        /* Input field styling */
+        input.form-control {
+            border: 1px solid #bce53e !important;
+        }
+
+        input.form-control:focus {
+            border-color: #bce53e !important;
+            box-shadow: 0 0 5px rgba(173, 255, 47, 0.5);
+        }
+        .company-title {
+    font-size: 18px; /* Larger font for emphasis */
+    font-weight: bold; /* Bold for visibility */
+    color: #333; /* Dark text color */
+    padding: 15px; /* Add padding */
+    display: block; /* Ensure it stays on its own line */
+    text-align: left; /* Align text to the left */
+}
+
+    </style>
+
+<body>
+    <main>
+        <header class="main-header style-2 navbar">
+            <div class="col-brand">
+                <!-- <a href="index.html" class="brand-wrap">
+                    <img src="{{ url_for('static', filename='admin/assets/imgs/theme/pngwing.com.png') }}" class="logo" alt=" Aqua Dropa Dashboard">
+                </a> -->
+                <span class="company-title">AQUA DROPA</span>
+            </div>
+           
+        </header>
+        <section class="content-main mt-80 mb-80">
+            <div class="card mx-auto card-login">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Sign in</h4>
+                    <form action="{{ url_for('login') }}" method="POST">
+                        <div class="mb-3">
+                            <label for="username">Username:</label>
+                            <input class="form-control" id="username" placeholder="Username" type="text" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password">Password:</label>
+                            <input class="form-control" id="password" placeholder="Password" type="password" name="password" required>
+                        </div>
+                        <div class="mb-4">
+                            <button type="submit" class="btn btn-primary w-100">Login</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+       
+    {% include 'layouts/adminFooter.html' %}
+    </body>
+</html>
+

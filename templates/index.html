@@ -1,0 +1,214 @@
+{% include 'layouts/adminHeader.html' %}
+</head>
+<style>
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    transition: margin-left 0.3s;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    transition: width 0.3s;
+    width: 240px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+}
+
+.sidebar.minimized {
+    width: 80px;
+}
+
+.main-content {
+    margin-left: 240px; /* Matches expanded sidebar */
+    padding: 20px;
+    transition: margin-left 0.3s;
+}
+
+.main-content.expanded {
+    margin-left: 240px;
+}
+
+.main-content.minimized {
+    margin-left: 80px;
+}
+
+/* Existing styles remain the same */
+.sidebar-collapsed + .main-content {
+    margin-left: 80px;
+    transition: margin-left 0.3s;
+}
+
+.sidebar-expanded + .main-content {
+    margin-left: 240px;
+    transition: margin-left 0.3s;
+}
+
+/* Rest of the previous CSS remains unchanged */
+header {
+    color: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h5 {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.card h3 {
+    font-size: 28px;
+    margin: 0;
+    font-weight: bold;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+/* Color classes remain the same */
+.bg-primary { background-color: #00e0c7 !important; }
+.bg-success { background-color: #00e0c7 !important; }
+.bg-warning { background-color: #00e0c7 !important; }
+.bg-danger { background-color: #00e0c7 !important; }
+.bg-info { background-color: #00e0c7 !important; }
+.bg-secondary { background-color: #00e0c7 !important; }
+.text-dark { color: #00e0c7 !important; }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 80px;
+    }
+
+    .card {
+        margin-bottom: 15px;
+    }
+}
+
+/* Custom Utility Classes */
+.container {
+    max-width: 1200px;
+}
+
+h1.mb-4 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.row {
+    margin-bottom: 15px;
+}
+</style>
+<body>
+    {% include 'layouts/adminNav.html' %}
+
+    <aside class="sidebar">
+        <!-- Your existing sidebar content -->
+    </aside>
+
+    <div class="main-content">
+       
+        <div class="container mt-5">
+            <h1 class="mb-4">Admin Dashboard</h1>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5>Total Users</h5>
+                            <h3>{{ total_users }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5>Total Delivery Agents</h5>
+                            <h3>{{ total_delivery_agents }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-warning text-dark">
+                        <div class="card-body">
+                            <h5>Total Orders</h5>
+                            <h3>{{ total_orders }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card bg-danger text-white">
+                        <div class="card-body">
+                            <h5>Pending Orders</h5>
+                            <h3>{{ pending_orders }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h5>Delivered Orders</h5>
+                            <h3>{{ delivered_orders }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-secondary text-white">
+                        <div class="card-body">
+                            <h5>Orders in Last 24 Hours</h5>
+                            <h3>{{ orders_last_24_hours }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to toggle sidebar and main content
+        const toggleSidebar = () => {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+
+            if (sidebar.classList.contains('minimized')) {
+                // Expand sidebar
+                sidebar.classList.remove('minimized');
+                mainContent.classList.remove('minimized');
+                mainContent.classList.add('expanded');
+            } else {
+                // Minimize sidebar
+                sidebar.classList.add('minimized');
+                mainContent.classList.remove('expanded');
+                mainContent.classList.add('minimized');
+            }
+        };
+
+        // Add event listener to minimize button
+        document.querySelector('.btn-aside-minimize').addEventListener('click', toggleSidebar);
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+   {% include 'layouts/adminFooter.html' %}
+</body>
+</html>
